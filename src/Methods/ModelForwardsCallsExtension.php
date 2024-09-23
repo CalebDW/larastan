@@ -16,10 +16,8 @@ use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\Php\DummyParameter;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
@@ -35,7 +33,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
-    public function __construct(private BuilderHelper $builderHelper, private ReflectionProvider $reflectionProvider, private EloquentBuilderForwardsCallsExtension $eloquentBuilderForwardsCallsExtension)
+    public function __construct(private BuilderHelper $builderHelper, private EloquentBuilderForwardsCallsExtension $eloquentBuilderForwardsCallsExtension)
     {
     }
 
@@ -80,8 +78,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         if (in_array($methodName, ['increment', 'decrement'], true)) {
             $methodReflection = $classReflection->getNativeMethod($methodName);
 
-            return new class ($classReflection, $methodName, $methodReflection) implements MethodReflection
-            {
+            return new class ($classReflection, $methodName, $methodReflection) implements MethodReflection {
                 private ClassReflection $classReflection;
 
                 private string $methodName;
@@ -168,17 +165,21 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
             };
         }
 
-        $builderReflection          = $this->reflectionProvider->getClass($builderName)->withTypes([new ObjectType($classReflection->getName())]);
-        $genericBuilderAndModelType = new GenericObjectType($builderName, [new ObjectType($classReflection->getName())]);
+        $builderType       = $this->builderHelper->getBuilderTypeForModels($classReflection->getName());
+        $builderReflection = $builderType->getClassReflection();
+
+        if ($builderReflection === null) {
+            return null;
+        }
 
         if ($builderReflection->hasNativeMethod($methodName)) {
             $reflection = $builderReflection->getNativeMethod($methodName);
 
-            $parametersAcceptor = $this->transformStaticParameters($reflection, $genericBuilderAndModelType);
+            $parametersAcceptor = $this->transformStaticParameters($reflection, $builderType);
 
-            $returnType = TypeTraverser::map($parametersAcceptor->getReturnType(), static function (Type $type, callable $traverse) use ($genericBuilderAndModelType) {
+            $returnType = TypeTraverser::map($parametersAcceptor->getReturnType(), static function (Type $type, callable $traverse) use ($builderType) {
                 if ($type instanceof TypeWithClassName && $type->getClassName() === Builder::class) {
-                    return $genericBuilderAndModelType;
+                    return $builderType;
                 }
 
                 return $traverse($type);
@@ -200,7 +201,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         return null;
     }
 
-    private function transformStaticParameters(MethodReflection $method, GenericObjectType $builder): ParametersAcceptor
+    private function transformStaticParameters(MethodReflection $method, ObjectType $builder): ParametersAcceptor
     {
         $acceptor = $method->getVariants()[0];
 
@@ -218,7 +219,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         }, $acceptor->getParameters()), $acceptor->isVariadic(), $this->transformStaticType($acceptor->getReturnType(), $builder));
     }
 
-    private function transformStaticType(Type $type, GenericObjectType $builder): Type
+    private function transformStaticType(Type $type, ObjectType $builder): Type
     {
         return TypeTraverser::map($type, static function (Type $type, callable $traverse) use ($builder): Type {
             if ($type instanceof StaticType) {
