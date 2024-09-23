@@ -15,7 +15,7 @@ class Address extends Model
 {
     protected $keyType = 'uuid';
 
-    /** @return MorphTo<Model, Address> */
+    /** @return MorphTo<Model, $this> */
     public function addressable(): MorphTo
     {
         return $this->morphTo();

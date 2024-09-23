@@ -63,7 +63,7 @@ function test(FooModel $foo, NonGenericBuilder $nonGenericBuilder): void
 class ModelWithCustomBuilder extends Model
 {
     // Dummy relation
-    /** @return HasMany<User> */
+    /** @return HasMany<User, $this> */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
