@@ -10,7 +10,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -22,37 +21,40 @@ final class AppMakeHelper
 {
     use HasContainer;
 
-    public function resolveTypeFromCall(FuncCall|MethodCall|StaticCall $call, Scope $scope): Type
+    public function resolveTypeFromCall(FuncCall|MethodCall|StaticCall $call, Scope $scope): Type|null
     {
         $args = $call->getArgs();
         if (count($args) === 0) {
             return new ErrorType();
         }
 
-        $argType = $scope->getType($args[0]->value);
-
+        $argType         = $scope->getType($args[0]->value);
         $constantStrings = $argType->getConstantStrings();
 
-        if (count($constantStrings) > 0) {
-            $types = [];
-            foreach ($constantStrings as $constantString) {
-                try {
-                    /** @var object|null $resolved */
-                    $resolved = $this->resolve($constantString->getValue());
-
-                    if ($resolved === null) {
-                        return new ErrorType();
-                    }
-
-                    $types[] = new ObjectType($resolved::class);
-                } catch (Throwable) {
-                    return new ErrorType();
-                }
-            }
-
-            return TypeCombinator::union(...$types);
+        if (count($constantStrings) === 0) {
+            return null;
         }
 
-        return new MixedType();
+        $types = [];
+        foreach ($constantStrings as $constantString) {
+            try {
+                /** @var object|null $resolved */
+                $resolved = $this->resolve($constantString->getValue());
+            } catch (Throwable $e) {
+                $resolved = null;
+            }
+
+            if ($resolved === null) {
+                continue;
+            }
+
+            $types[] = new ObjectType($resolved::class);
+        }
+
+        return match (count($types)) {
+            0 => null,
+            1 => $types[0],
+            default => TypeCombinator::union(...$types),
+        };
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ApplicationMake;
 
+use App\FailsAtRuntime;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,15 @@ function test(Application $app, ApplicationContract $app2, string $model): void
     assertType('Illuminate\Config\Repository', $app2->make(Repository::class));
     assertType('Illuminate\Config\Repository', $app2->makeWith(Repository::class));
     assertType('Illuminate\Config\Repository', $app2->resolve(Repository::class));
+
+    assertType('App\FailsAtRuntime', $app->make(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', $app->makeWith(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', $app->resolve(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', $app2->make(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', $app2->makeWith(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', $app2->resolve(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', app(FailsAtRuntime::class));
+    assertType('App\FailsAtRuntime', resolve(FailsAtRuntime::class));
 
     assertType('mixed', $app->make($model));
     assertType('mixed', $app->makeWith($model));
