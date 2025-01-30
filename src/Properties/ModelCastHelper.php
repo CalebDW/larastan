@@ -15,12 +15,12 @@ use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\AsEncryptedArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsEncryptedCollection;
 use Illuminate\Database\Eloquent\Casts\AsStringable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as IlluminateCarbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Stringable as IlluminateStringable;
+use Larastan\Larastan\Support\ModelHelper;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
@@ -40,7 +40,6 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use ReflectionException;
 use stdClass;
 use Stringable;
 
@@ -59,6 +58,7 @@ class ModelCastHelper
 
     public function __construct(
         protected ReflectionProvider $reflectionProvider,
+        protected ModelHelper $modelHelper,
     ) {
     }
 
@@ -237,14 +237,8 @@ class ModelCastHelper
      */
     private function getModelCasts(ClassReflection $modelClassReflection): array
     {
-        try {
-            /** @var Model $modelInstance */
-            $modelInstance = $modelClassReflection->getNativeReflection()->newInstanceWithoutConstructor();
-        } catch (ReflectionException) {
-            throw new ShouldNotHappenException();
-        }
-
-        $modelCasts = $modelInstance->getCasts();
+        $modelInstance = $this->modelHelper->getModelInstance($modelClassReflection);
+        $modelCasts    = $modelInstance->getCasts();
 
         $castsMethodReturnType = $modelClassReflection->getMethod(
             'casts',

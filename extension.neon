@@ -271,8 +271,8 @@ services:
         class: Larastan\Larastan\ReturnTypes\Helpers\ValidatorExtension
         tags:
             - phpstan.broker.dynamicFunctionReturnTypeExtension
-    
-    -        
+
+    -
         class: Larastan\Larastan\ReturnTypes\Helpers\LiteralExtension
         tags:
             - phpstan.broker.dynamicFunctionReturnTypeExtension
@@ -409,12 +409,14 @@ services:
             active: %checkModelProperties%
 
     -
+        class: Larastan\Larastan\Support\ModelHelper
+
+    -
         class: Larastan\Larastan\Properties\MigrationHelper
         arguments:
             databaseMigrationPath: %databaseMigrationsPath%
             disableMigrationScan: %disableMigrationScan%
             parser: @currentPhpVersionSimpleDirectParser
-            reflectionProvider: @reflectionProvider
 
     -
         class: Larastan\Larastan\Properties\SquashedMigrationHelper
