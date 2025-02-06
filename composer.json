@@ -22,13 +22,13 @@
     "require": {
         "php": "^8.0.2",
         "ext-json": "*",
-        "illuminate/console": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/container": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/contracts": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/database": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/http": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/pipeline": "^9.52.16 || ^10.28.0 || ^11.16.0",
-        "illuminate/support": "^9.52.16 || ^10.28.0 || ^11.16.0",
+        "illuminate/console": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/container": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/contracts": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/database": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/http": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/pipeline": "^9.52.20 || ^10.48.28 || ^11.41.3",
+        "illuminate/support": "^9.52.20 || ^10.48.28 || ^11.41.3",
         "phpmyadmin/sql-parser": "^5.9.0",
         "phpstan/phpstan": "^1.12.17"
     },
@@ -36,7 +36,7 @@
         "doctrine/coding-standard": "^12.0",
         "nikic/php-parser": "^4.19.1",
         "orchestra/canvas": "^7.11.1 || ^8.11.0 || ^9.0.2",
-        "orchestra/testbench": "^7.33.0 || ^8.13.0 || ^9.0.3",
+        "orchestra/testbench": "^7.51.3 || ^8.32.3 || ^9.9.3",
         "phpunit/phpunit": "^9.6.13 || ^10.5.16"
     },
     "suggest": {
