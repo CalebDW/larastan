@@ -23,10 +23,19 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1565.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1718.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1760.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1819.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1830.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1985.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1997.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2073.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2111.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-filter.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-helper.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-make-static.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-reject.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-stubs.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where-not-null.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/conditionable.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-array-access.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-make.php');
@@ -63,11 +72,18 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/view-exists.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/view.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1997.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1819.php');
 
         if (version_compare(LARAVEL_VERSION, '11.28.0', '>=')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections-l11-28.php');
+        }
+
+        // 11.100 is an artificial constraint until 12.0.0 is released
+        if (version_compare(LARAVEL_VERSION, '11.0.0', '>=') && version_compare(LARAVEL_VERSION, '11.100.0', '<')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l11.php');
+        }
+
+        if (version_compare(LARAVEL_VERSION, '12.0.0', '>=') || LARAVEL_VERSION === '12.x-dev') {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l12.php');
         }
 
         //##############################################################################################################
