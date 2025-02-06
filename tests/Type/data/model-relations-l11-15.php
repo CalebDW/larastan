@@ -377,7 +377,7 @@ class User extends Model
 
         $through = $this->through($this->mechanic());
         assertType(
-            'Illuminate\Database\Eloquent\PendingHasThroughRelationship<ModelRelationsL11\Mechanic, $this(ModelRelationsL11\User)>',
+            'Illuminate\Database\Eloquent\PendingHasThroughRelationship<ModelRelationsL11\Mechanic, $this(ModelRelationsL11\User), Illuminate\Database\Eloquent\Relations\HasOne<ModelRelationsL11\Mechanic, $this(ModelRelationsL11\User)>>',
             $through,
         );
         assertType(
