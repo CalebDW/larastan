@@ -6,7 +6,7 @@ namespace Type;
 
 use PHPStan\Testing\TypeInferenceTestCase;
 
-use function version_compare;
+use function Orchestra\Testbench\laravel_version_compare;
 
 class GeneralTypeTest extends TypeInferenceTestCase
 {
@@ -73,16 +73,15 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/view.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
 
-        if (version_compare(LARAVEL_VERSION, '11.28.0', '>=')) {
+        if (laravel_version_compare('11.28.0', '>=')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections-l11-28.php');
         }
 
-        // 11.100 is an artificial constraint until 12.0.0 is released
-        if (version_compare(LARAVEL_VERSION, '11.0.0', '>=') && version_compare(LARAVEL_VERSION, '11.100.0', '<')) {
+        if (laravel_version_compare('11.0.0', '>=') && laravel_version_compare('12.0.0', '<')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l11.php');
         }
 
-        if (version_compare(LARAVEL_VERSION, '12.0.0', '>=') || LARAVEL_VERSION === '12.x-dev') {
+        if (laravel_version_compare('12.0.0', '>=')) {
             yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l12.php');
         }
 
