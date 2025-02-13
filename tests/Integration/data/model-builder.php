@@ -3,10 +3,13 @@
 namespace ModelBuilder;
 
 use App\Post;
+use App\PostBuilder;
 use App\Team;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+
+use function PHPStan\Testing\assertType;
 
 class User extends Model
 {
@@ -39,4 +42,19 @@ function test(): void
 
     /** @see https://github.com/larastan/larastan/issues/1952 */
     Team::query()->where('name', 'Team A')->orderBy('name')->get();
+
+    \App\User::query()->whereHas('posts', function ($query) {
+        assertType('App\PostBuilder<App\Post>', $query);
+        return $query->where('name', 'like', 'Foo%');
+    })->get();
+
+    \App\User::query()->whereHas('posts', function (Builder $query) {
+        assertType('App\PostBuilder<App\Post>', $query);
+        return $query->where('name', 'like', 'Foo%');
+    })->get();
+
+    \App\User::query()->whereHas('posts', function (PostBuilder $query) {
+        assertType('App\PostBuilder<App\Post>', $query);
+        return $query->where('name', 'like', 'Foo%');
+    })->get();
 }
