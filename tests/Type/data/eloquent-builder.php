@@ -130,44 +130,54 @@ function test(
         assertType('Illuminate\Database\Eloquent\Builder<App\Transaction>', $query);
     });
 
-    Address::query()->hasMorph('addressable', [User::class, Team::class], callable: function ($query) {
+    Address::query()->hasMorph('addressable', [User::class, Team::class], callable: function ($query, $morph) {
         assertType('App\ChildTeamBuilder|Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->hasMorph('addressable', User::class, '=', 1, 'and', function (Builder $query) {
+    Address::query()->hasMorph('addressable', User::class, '=', 1, 'and', function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->hasMorph('addressable', '*', callback: function (Builder $query) {
+    Address::query()->hasMorph('addressable', '*', callback: function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<Illuminate\Database\Eloquent\Model>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->doesntHaveMorph('addressable', [User::class], function (Builder $query) {
+    Address::query()->doesntHaveMorph('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->whereHasMorph('addressable', [User::class], function (Builder $query) {
+    Address::query()->whereHasMorph('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->orWhereHasMorph('addressable', [User::class], function (Builder $query) {
+    Address::query()->orWhereHasMorph('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->whereDoesntHaveMorph('addressable', [User::class], function (Builder $query) {
+    Address::query()->whereDoesntHaveMorph('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->orWhereDoesntHaveMorph('addressable', [User::class], function (Builder $query) {
+    Address::query()->orWhereDoesntHaveMorph('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->whereMorphRelation('addressable', [User::class], function (Builder $query) {
+    Address::query()->whereMorphRelation('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
-    Address::query()->orWhereMorphRelation('addressable', [User::class], function (Builder $query) {
+    Address::query()->orWhereMorphRelation('addressable', [User::class], function (Builder $query, $morph) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
+        assertType('string', $morph);
     });
 
     User::query()->firstWhere(function (Builder $query) {
@@ -258,44 +268,60 @@ function test(
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::query()->whereEmail('bar'));
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::query()->whereIdAndEmail(1, 'foo@example.com'));
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::query()->whereEmail(1));
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNull('name')
         ->orderBy('email')
         ->toBase()
     );
-    assertType('object|null', User::getQuery()
+    assertType(
+        'object|null',
+        User::getQuery()
         ->select('some_model.created')
         ->where('some_model.some_column', '=', true)
         ->orderBy('some_model.created', 'desc')
         ->first()
     );
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNotBetween('a', [1, 5])
         ->orWhereNotBetween('a', [1, 5])
         ->toBase()
     );
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::query()->withTrashed());
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNull('name')
         ->orderBy(\Illuminate\Support\Facades\DB::raw('name'))
         ->toBase()
     );
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNull('name')
         ->orderBy(User::whereNotNull('name'))
         ->toBase()
     );
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNull('name')
         ->latest(\Illuminate\Support\Facades\DB::raw('created_at'))
         ->toBase()
     );
-    assertType('Illuminate\Database\Query\Builder', User::query()
+    assertType(
+        'Illuminate\Database\Query\Builder',
+        User::query()
         ->whereNull('name')
         ->oldest(\Illuminate\Support\Facades\DB::raw('created_at'))
         ->toBase()
     );
-    assertType('Illuminate\Support\Collection<(int|string), mixed>', User::query()
+    assertType(
+        'Illuminate\Support\Collection<(int|string), mixed>',
+        User::query()
         ->whereNull('name')
         ->pluck(\Illuminate\Support\Facades\DB::raw('created_at'))
         ->toBase()
@@ -305,29 +331,41 @@ function test(
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', $userBuilder->macro('customMacro', function () {
     }));
     assertType('string', $userBuilder->globalCustomMacro('foo'));
-    assertType('App\User', User::with('accounts')
+    assertType(
+        'App\User',
+        User::with('accounts')
         ->where('email', 'bar')
         ->orWhere('name', 'baz')
         ->firstOrFail()
     );
-    assertType('App\User|null', User::with('accounts')
+    assertType(
+        'App\User|null',
+        User::with('accounts')
         ->where('email', 'bar')
         ->orWhere('name', 'baz')
         ->first()
     );
     assertType('App\User|null', User::query()->firstWhere(['email' => 'foo@bar.com']));
-    assertType('App\User|null', User::with('accounts')
+    assertType(
+        'App\User|null',
+        User::with('accounts')
         ->orWhere(\Illuminate\Support\Facades\DB::raw('name'), 'like', '%john%')
         ->first()
     );
-    assertType('App\User|null', User::with('accounts')
+    assertType(
+        'App\User|null',
+        User::with('accounts')
         ->where(\Illuminate\Support\Facades\DB::raw('name'), 'like', '%john%')
         ->first()
     );
-    assertType('App\User|null', User::with('accounts')
+    assertType(
+        'App\User|null',
+        User::with('accounts')
         ->firstWhere(\Illuminate\Support\Facades\DB::raw('name'), 'like', '%john%')
     );
-    assertType('mixed', User::with('accounts')
+    assertType(
+        'mixed',
+        User::with('accounts')
         ->value(\Illuminate\Support\Facades\DB::raw('name'))
     );
     assertType('int', User::query()->restore());

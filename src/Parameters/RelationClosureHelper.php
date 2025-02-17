@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Larastan\Larastan\Methods\BuilderHelper;
+use PHPStan\Type\NeverType;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
@@ -19,7 +20,6 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -103,7 +103,7 @@ final class RelationClosureHelper
 
         return new ClosureType([
             new ClosureQueryParameter('query', $type),
-            new ClosureQueryParameter('type', $isMorphMethod ? new NeverType() : new StringType()),
+            new ClosureQueryParameter('type', $isMorphMethod ? new StringType() : new NeverType()),
         ], new MixedType());
     }
 
